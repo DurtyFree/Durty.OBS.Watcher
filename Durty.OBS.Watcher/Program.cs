@@ -31,6 +31,8 @@ namespace Durty.OBS.Watcher
         
         static void Main(string[] args)
         {
+            Console.Title = "Durtys OBS Watcher Tool";
+
             Console.WriteLine("Starting OBS Watcher...");
             var obsManager = new ObsManager(ServerIp, Port, Password);
             var focusedWindowChangeActionRepository = new FocusedWindowChangeActionRepository();

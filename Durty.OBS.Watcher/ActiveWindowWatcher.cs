@@ -38,7 +38,7 @@ namespace Durty.OBS.Watcher
                     string newFocusedWindowTitle = WindowApi.GetActiveWindowTitle();
 
                     //Only trigger event & update when focused window title is different
-                    if (newFocusedWindowTitle != FocusedWindowTitle)
+                    if (newFocusedWindowTitle != null && newFocusedWindowTitle != FocusedWindowTitle)
                     {
                         FocusedWindowTitleChanged?.Invoke(this, new FocusedWindowTitleChangedEventArgs()
                         {
