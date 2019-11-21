@@ -5,6 +5,7 @@ using System.Threading;
 using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
+using Durty.OBS.Watcher.Services;
 using OBSWebsocketDotNet;
 
 namespace Durty.OBS.Watcher.Handlers
@@ -14,6 +15,7 @@ namespace Durty.OBS.Watcher.Handlers
     {
         private readonly CaptureFullWindowActionRepository _captureFullWindowActionRepository;
         private readonly OBSWebsocket _obs;
+        private readonly WindowMatchService _windowMatchService;
         private readonly ILogger _logger;
         private bool _fullCaptureWindowInFocus;
         private Timer _focusedCheckTimer;
@@ -23,10 +25,12 @@ namespace Durty.OBS.Watcher.Handlers
             ActiveWindowWatcher activeWindowWatcher,
             CaptureFullWindowActionRepository captureFullWindowActionRepository,
             OBSWebsocket obs,
+            WindowMatchService windowMatchService,
             ILogger logger)
         {
             _captureFullWindowActionRepository = captureFullWindowActionRepository;
             _obs = obs;
+            _windowMatchService = windowMatchService;
             _logger = logger;
 
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
@@ -40,14 +44,14 @@ namespace Durty.OBS.Watcher.Handlers
             foreach (CaptureFullWindowAction action in actions)
             {
                 if (e.NewFocusedWindowTitle != string.Empty &&
-                    DoesTitleMatch(e.NewFocusedWindowTitle, action.CaptureWindowTitle))
+                    _windowMatchService.DoesTitleMatch(e.NewFocusedWindowTitle, action.CaptureWindowTitle))
                 {
                     OnFullCaptureWindowFocused(action);
                     break;
                 }
 
                 if (e.OldFocusedWindowTitle != string.Empty && _fullCaptureWindowInFocus &&
-                    DoesTitleMatch(e.OldFocusedWindowTitle, action.CaptureWindowTitle))
+                    _windowMatchService.DoesTitleMatch(e.OldFocusedWindowTitle, action.CaptureWindowTitle))
                 {
                     OnFullCapturedWindowFocusLost(action);
                     break;
@@ -104,13 +108,6 @@ namespace Durty.OBS.Watcher.Handlers
                 return default;
 
             return obsDisplayCaptureSource;
-        }
-
-        private bool DoesTitleMatch(string fullTitle, string titleSearch)
-        {
-            //TODO: Implement super crazy search / contains / placeholder/ variables thing
-            //"Durtys OBS Watcher - Microsoft Visual Studio" Matches with "Durtys%Watcher%Microsoft Visual Studio"
-            return fullTitle.Contains(titleSearch);
         }
     }
 }

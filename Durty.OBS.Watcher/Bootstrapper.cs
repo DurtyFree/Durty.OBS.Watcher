@@ -5,6 +5,7 @@ using Durty.OBS.Watcher.Handlers;
 using Durty.OBS.Watcher.Loggers;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
+using Durty.OBS.Watcher.Services;
 using Ninject;
 using OBSWebsocketDotNet;
 
@@ -28,7 +29,7 @@ namespace Durty.OBS.Watcher
                 var settings = settingsRepository.Get();
                 return new ObsManager(logger, settings.ObsWebSocketsIp, settings.ObsWebSocketsPort, settings.ObsWebSocketsAuthPassword);
             }).InSingletonScope();
-            _kernel.Bind<FocusedWindowChangeActionRepository>().ToSelf().InSingletonScope();
+            _kernel.Bind<FocusedWindowSourceVisibilityActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<CaptureFullWindowActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<SettingsRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<ActiveWindowWatcher>().ToMethod(context => new ActiveWindowWatcher(10)).InSingletonScope();
@@ -38,10 +39,12 @@ namespace Durty.OBS.Watcher
                 ObsManager obsManager = _kernel.Get<ObsManager>();
                 return obsManager.Obs;
             });
+            _kernel.Bind<WindowMatchService>().ToSelf();
 
             #region Handlers
 
-            _kernel.Bind<IHandler>().To<FocusedWindowChangedHandler>().InSingletonScope();
+            _kernel.Bind<IHandler>().To<FocusedWindowSourceVisibilityHandler>().InSingletonScope();
+            _kernel.Bind<IHandler>().To<FocusedWindowSceneSwitchHandler>().InSingletonScope();
             _kernel.Bind<IHandler>().To<FocusedWindowChangedDebugHandler>().InSingletonScope();
             _kernel.Bind<IHandler>().To<FullCaptureWindowFocusedChangedHandler>().InSingletonScope();
 
