@@ -13,7 +13,7 @@ namespace Durty.OBS.Watcher.Repositories
             {
                 CaptureWindowTitle = "Microsoft Visual Studio",
                 DisplayCaptureSourceName = "All IDE Capture",
-                NeededWindowFocusTime = 3
+                NeededWindowFocusTime = 2
             }
         };
 
