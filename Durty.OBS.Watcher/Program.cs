@@ -26,13 +26,12 @@ namespace Durty.OBS.Watcher
     -> Support changing source render toggle for all available scenes, not only current one
 
     - Capture Window with tooltips mode
-    -> Creates / Uses display capture on monitor with defined window
-    -> Toggles Display Capture source visibility whenever defined window is in focus
-    -> When defined window is out of focus, hide display capture & show window capture
-    -> Only change to display capture if defined window is focused for more than x seconds? (Safety / fast switch protection)
+    -> Add support for multiple full capture actions
+    -> Set full display capture visibility to false when tool is closed
     -> Auto raise focused window watcher polling?
     -> Remove display capture with transform on source by adding 42 to transform size y (Obs transform extension method)
     -> Use System.Windows.Forms.Screen to retrieve working area of given display (without task bar)
+    -> TODO: Better Title Match check in order to prevent false "full capture activations" -> glitches (Website names)
      */
 
     class Program

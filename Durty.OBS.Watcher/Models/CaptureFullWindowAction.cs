@@ -17,6 +17,7 @@
 
         /// <summary>
         /// Time the window needs to be in focus to be "full captured" (in seconds).
+        /// This is for safety reasons, to prevent windows beeing shown up whenever users "fast" switches between windows.
         /// Per default 2 seconds
         /// </summary>
         public int NeededWindowFocusTime { get; set; } = 2;
