@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Durty.OBS.Watcher.Handlers;
 using Durty.OBS.Watcher.Repositories;
+using OBSWebsocketDotNet;
 
 namespace Durty.OBS.Watcher
 {
@@ -29,6 +31,7 @@ namespace Durty.OBS.Watcher
     -> Only change to display capture if defined window is focused for more than x seconds? (Safety / fast switch protection)
     -> Auto raise focused window watcher polling?
     -> Remove display capture with transform on source by adding 42 to transform size y (Obs transform extension method)
+    -> Use System.Windows.Forms.Screen to retrieve working area of given display (without task bar)
      */
 
     class Program
@@ -46,6 +49,7 @@ namespace Durty.OBS.Watcher
             Console.WriteLine("Starting OBS Watcher...");
             var obsManager = new ObsManager(ServerIp, Port, Password);
             var focusedWindowChangeActionRepository = new FocusedWindowChangeActionRepository();
+            var captureFullWindowActionRepository = new CaptureFullWindowActionRepository();
             var activeWindowWatcher = new ActiveWindowWatcher(100);
             activeWindowWatcher.Start();
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
@@ -62,7 +66,7 @@ namespace Durty.OBS.Watcher
             }
 
             Console.WriteLine("Successfully connected.");
-            //List<OBSScene> scenes = obsManager.Obs.ListScenes();
+            List<OBSScene> scenes = obsManager.Obs.ListScenes();
 
             Console.WriteLine("Press any key to exit.");
             Console.ReadLine();
