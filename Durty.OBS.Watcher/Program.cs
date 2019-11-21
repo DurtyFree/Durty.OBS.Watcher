@@ -8,7 +8,6 @@ namespace Durty.OBS.Watcher
     - On startup check all defined actions if scene & source names are valid
     - All actions should be defined in json files
     - Application configuration should be outsourced to configuration json
-    - Maybe consider porting to .NET Console project, because of OBS /OBS WebSockets dependency & focused window change API
 
     - Focused Window Change title should support placeholders 'DurtyMapEditor%Visual Studio' to check for multiple contain or exact window title match
 
