@@ -14,16 +14,16 @@ namespace Durty.OBS.Watcher
 
     public class ActiveWindowWatcher
     {
-        private readonly int _pollDelayMilliseconds;
         private CancellationTokenSource _cancellationTokenSource;
 
+        public int PollDelayMilliseconds { get; set; }
         public string FocusedWindowTitle { get; private set; }
 
         public event EventHandler<FocusedWindowTitleChangedEventArgs> FocusedWindowTitleChanged;
 
         public ActiveWindowWatcher(int pollDelayMilliseconds = 1000)
         {
-            _pollDelayMilliseconds = pollDelayMilliseconds;
+            PollDelayMilliseconds = pollDelayMilliseconds;
         }
 
         public void Start()
@@ -48,7 +48,7 @@ namespace Durty.OBS.Watcher
                         FocusedWindowTitle = newFocusedWindowTitle;
                     }
 
-                    Thread.Sleep(_pollDelayMilliseconds);
+                    Thread.Sleep(PollDelayMilliseconds);
                     if (token.IsCancellationRequested)
                         break;
                 }
