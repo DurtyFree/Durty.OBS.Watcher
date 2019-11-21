@@ -10,6 +10,7 @@ namespace Durty.OBS.Watcher
     {
         public string OldFocusedWindowTitle { get; set; }
         public string NewFocusedWindowTitle { get; set; }
+
     }
 
     public class ActiveWindowWatcher

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Durty.OBS.Watcher.WinApi
 {
@@ -9,6 +11,9 @@ namespace Durty.OBS.Watcher.WinApi
             try
             {
                 IntPtr handle = PInvoke.User32.GetForegroundWindow();
+                int processId = PInvoke.Kernel32.GetProcessId(handle);
+                Process process = Process.GetProcessById(processId);
+                
                 return PInvoke.User32.GetWindowText(handle);
             }
             catch (Exception e)
