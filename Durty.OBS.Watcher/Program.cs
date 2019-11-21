@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Durty.OBS.Watcher.Handlers;
 using Durty.OBS.Watcher.Repositories;
+using Ninject;
 using OBSWebsocketDotNet;
 
 namespace Durty.OBS.Watcher
@@ -36,48 +37,19 @@ namespace Durty.OBS.Watcher
 
     class Program
     {
-        public static bool DebugMode = true;
+        public static readonly IKernel Kernel = new StandardKernel();
 
-        public static string ServerIp = "127.0.0.1";
-        public static int Port = 4444;
-        public static string Password = "";
-        
         static void Main(string[] args)
         {
             Console.Title = "Durtys OBS Watcher Tool";
 
             Console.WriteLine("Starting OBS Watcher...");
-            var obsManager = new ObsManager(ServerIp, Port, Password);
-            var focusedWindowChangeActionRepository = new FocusedWindowChangeActionRepository();
-            var captureFullWindowActionRepository = new CaptureFullWindowActionRepository();
-            var activeWindowWatcher = new ActiveWindowWatcher(100);
-            activeWindowWatcher.Start();
-            activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
-            var focusedWindowChangedHandler = new FocusedWindowChangedHandler(activeWindowWatcher, focusedWindowChangeActionRepository, obsManager);
-
-            Console.WriteLine($"Trying to connect to WebSockets {ServerIp}:{Port} ...");
+            var bootstrapper = new Bootstrapper(Kernel);
+            bootstrapper.DefineRules();
+            bootstrapper.Run();
             
-            if (!obsManager.Connect())
-            {
-                Console.WriteLine("Failed to connect.");
-                Console.WriteLine("Press any key to exit.");
-                Console.ReadLine();
-                return;
-            }
-
-            Console.WriteLine("Successfully connected.");
-            List<OBSScene> scenes = obsManager.Obs.ListScenes();
-
             Console.WriteLine("Press any key to exit.");
             Console.ReadLine();
-        }
-        
-        private static void OnFocusedWindowTitleChanged(object sender, FocusedWindowTitleChangedEventArgs e)
-        {
-            if (DebugMode)
-            {
-                Console.WriteLine($"[DEBUG][FocusedWindowChange] {e.OldFocusedWindowTitle} -> {e.NewFocusedWindowTitle}");
-            }
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
 
 namespace Durty.OBS.Watcher.Handlers
 {
     public class FocusedWindowChangedHandler
+        : IHandler
     {
         private readonly ActiveWindowWatcher _activeWindowWatcher;
         private readonly FocusedWindowChangeActionRepository _changeActionRepository;
