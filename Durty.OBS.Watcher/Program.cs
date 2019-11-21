@@ -28,6 +28,7 @@ namespace Durty.OBS.Watcher
     -> When defined window is out of focus, hide display capture & show window capture
     -> Only change to display capture if defined window is focused for more than x seconds? (Safety / fast switch protection)
     -> Auto raise focused window watcher polling?
+    -> Remove display capture with transform on source by adding 42 to transform size y (Obs transform extension method)
      */
 
     class Program
@@ -45,7 +46,7 @@ namespace Durty.OBS.Watcher
             Console.WriteLine("Starting OBS Watcher...");
             var obsManager = new ObsManager(ServerIp, Port, Password);
             var focusedWindowChangeActionRepository = new FocusedWindowChangeActionRepository();
-            var activeWindowWatcher = new ActiveWindowWatcher();
+            var activeWindowWatcher = new ActiveWindowWatcher(100);
             activeWindowWatcher.Start();
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
             var focusedWindowChangedHandler = new FocusedWindowChangedHandler(activeWindowWatcher, focusedWindowChangeActionRepository, obsManager);
