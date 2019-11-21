@@ -8,12 +8,15 @@ namespace Durty.OBS.Watcher.Handlers
         : IHandler
     {
         private readonly SettingsRepository _settingsRepository;
+        private readonly ILogger _logger;
 
         public FocusedWindowChangedDebugHandler(
             ActiveWindowWatcher activeWindowWatcher,
-            SettingsRepository settingsRepository)
+            SettingsRepository settingsRepository,
+            ILogger logger)
         {
             _settingsRepository = settingsRepository;
+            _logger = logger;
 
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
         }
@@ -22,7 +25,7 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (_settingsRepository.Get().DebugMode)
             {
-                Console.WriteLine($"[DEBUG][FocusedWindowChange] {e.OldFocusedWindowTitle} -> {e.NewFocusedWindowTitle}");
+                _logger.Write(LogLevel.Debug, $"[FocusedWindowChange] {e.OldFocusedWindowTitle} -> {e.NewFocusedWindowTitle}");
             }
         }
     }

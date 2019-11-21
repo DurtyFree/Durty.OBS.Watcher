@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Handlers;
 using Durty.OBS.Watcher.Repositories;
 using Ninject;
@@ -43,12 +44,13 @@ namespace Durty.OBS.Watcher
         {
             Console.Title = "Durtys OBS Watcher Tool";
 
-            Console.WriteLine("Starting OBS Watcher...");
-            var bootstrapper = new Bootstrapper(Kernel);
+            Bootstrapper bootstrapper = new Bootstrapper(Kernel);
             bootstrapper.DefineRules();
             bootstrapper.Run();
-            
-            Console.WriteLine("Press any key to exit.");
+
+            ILogger logger = Kernel.Get<ILogger>();
+
+            logger.Write(LogLevel.Info, "Press any key to exit.");
             Console.ReadLine();
         }
     }
