@@ -10,7 +10,6 @@ using OBSWebsocketDotNet;
 namespace Durty.OBS.Watcher
 {
     /* TODO / IDEAS
-    - Debug Mode to diagnose issues
     - On startup check all defined actions if scene & source names are valid
     - All actions should be defined in json files
     - Application configuration should be outsourced to configuration json

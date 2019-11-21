@@ -6,6 +6,7 @@ using Durty.OBS.Watcher.Loggers;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
 using Ninject;
+using OBSWebsocketDotNet;
 
 namespace Durty.OBS.Watcher
 {
@@ -30,10 +31,21 @@ namespace Durty.OBS.Watcher
             _kernel.Bind<FocusedWindowChangeActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<CaptureFullWindowActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<SettingsRepository>().ToSelf().InSingletonScope();
-            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context => new ActiveWindowWatcher(100)).InSingletonScope();
+            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context => new ActiveWindowWatcher(10)).InSingletonScope();
+            _kernel.Bind<ILogger>().To<ConsoleLogger>().InSingletonScope();
+            _kernel.Bind<OBSWebsocket>().ToMethod(context =>
+            {
+                ObsManager obsManager = _kernel.Get<ObsManager>();
+                return obsManager.Obs;
+            });
+
+            #region Handlers
+
             _kernel.Bind<IHandler>().To<FocusedWindowChangedHandler>().InSingletonScope();
             _kernel.Bind<IHandler>().To<FocusedWindowChangedDebugHandler>().InSingletonScope();
-            _kernel.Bind<ILogger>().To<ConsoleLogger>().InSingletonScope();
+            _kernel.Bind<IHandler>().To<FullCaptureWindowFocusedChangedHandler>().InSingletonScope();
+
+            #endregion
         }
 
         public void Run()
