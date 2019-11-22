@@ -27,7 +27,7 @@ namespace Durty.OBS.Watcher.Handlers
         private void OnFocusedWindowTitleChanged(object sender, FocusedWindowTitleChangedEventArgs e)
         {
             FocusedWindowSourceVisibilityAction foundChangeAction = _sourceVisibilityActionRepository.GetAll()
-                .FirstOrDefault(c => e.NewFocusedWindowTitle.Contains(c.WindowTitle));
+                .FirstOrDefault(c => e.NewFocusedWindow.Title.Contains(c.WindowTitle));
             if(foundChangeAction == null)
                 return;
 

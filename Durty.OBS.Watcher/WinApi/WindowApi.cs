@@ -1,19 +1,31 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Durty.OBS.Watcher.WinApi
 {
     public class WindowApi
     {
-        public static string GetActiveWindowTitle()
+
+        public static int GetWindowProcessId(IntPtr windowHandle, out int processId)
+        {
+            processId = 0;
+
+            try
+            {
+                int threadId = PInvoke.User32.GetWindowThreadProcessId(windowHandle, out processId);
+                return threadId;
+            }
+            catch (Exception e)
+            {
+                //TODO: maybe log exception in debug/verbose?
+            }
+
+            return default;
+        }
+        
+        public static string GetWindowTitle(IntPtr handle)
         {
             try
             {
-                IntPtr handle = PInvoke.User32.GetForegroundWindow();
-                int processId = PInvoke.Kernel32.GetProcessId(handle);
-                Process process = Process.GetProcessById(processId);
-                
                 return PInvoke.User32.GetWindowText(handle);
             }
             catch (Exception e)
@@ -21,6 +33,20 @@ namespace Durty.OBS.Watcher.WinApi
                 //TODO: maybe log exception in debug/verbose?
             }
             return null;
+        }
+
+        public static IntPtr GetForegroundWindow()
+        {
+            try
+            {
+                IntPtr handle = PInvoke.User32.GetForegroundWindow();
+                return handle;
+            }
+            catch (Exception e)
+            {
+                //TODO: maybe log exception in debug/verbose?
+            }
+            return default;
         }
     }
 }

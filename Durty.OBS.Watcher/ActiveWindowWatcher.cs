@@ -5,12 +5,22 @@ using Durty.OBS.Watcher.WinApi;
 
 namespace Durty.OBS.Watcher
 {
+    public class WindowInfo
+    {
+        public string Title { get; set; }
+
+        public int ProcessId { get; set; }
+
+        public int ThreadId { get; set; }
+
+        public IntPtr Handle { get; set; }
+    }
+
     public class FocusedWindowTitleChangedEventArgs 
         : EventArgs
     {
-        public string OldFocusedWindowTitle { get; set; }
-        public string NewFocusedWindowTitle { get; set; }
-
+        public WindowInfo OldFocusedWindow { get; set; }
+        public WindowInfo NewFocusedWindow { get; set; }
     }
 
     public class ActiveWindowWatcher
@@ -18,7 +28,7 @@ namespace Durty.OBS.Watcher
         private CancellationTokenSource _cancellationTokenSource;
 
         public int PollDelayMilliseconds { get; set; }
-        public string FocusedWindowTitle { get; private set; }
+        public WindowInfo FocusedWindowInfo { get; private set; }
 
         public event EventHandler<FocusedWindowTitleChangedEventArgs> FocusedWindowTitleChanged;
 
@@ -36,17 +46,26 @@ namespace Durty.OBS.Watcher
             {
                 while (true)
                 {
-                    string newFocusedWindowTitle = WindowApi.GetActiveWindowTitle();
+                    IntPtr newFocusedWindowHandle = WindowApi.GetForegroundWindow();
+                    string newFocusedWindowTitle = WindowApi.GetWindowTitle(newFocusedWindowHandle);
 
                     //Only trigger event & update when focused window title is different
-                    if (newFocusedWindowTitle != null && newFocusedWindowTitle != FocusedWindowTitle)
+                    if (newFocusedWindowTitle != null && newFocusedWindowTitle != FocusedWindowInfo?.Title)
                     {
+                        int threadId = WindowApi.GetWindowProcessId(newFocusedWindowHandle, out int processId);
+                        WindowInfo newFocusedWindowInfo = new WindowInfo()
+                        {
+                            Title = newFocusedWindowTitle,
+                            Handle = newFocusedWindowHandle,
+                            ProcessId = processId,
+                            ThreadId = threadId
+                        };
                         FocusedWindowTitleChanged?.Invoke(this, new FocusedWindowTitleChangedEventArgs()
                         {
-                            OldFocusedWindowTitle = FocusedWindowTitle,
-                            NewFocusedWindowTitle = newFocusedWindowTitle
+                            OldFocusedWindow = FocusedWindowInfo,
+                            NewFocusedWindow = newFocusedWindowInfo
                         });
-                        FocusedWindowTitle = newFocusedWindowTitle;
+                        FocusedWindowInfo = newFocusedWindowInfo;
                     }
 
                     Thread.Sleep(PollDelayMilliseconds);

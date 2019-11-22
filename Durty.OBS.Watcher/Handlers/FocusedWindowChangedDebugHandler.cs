@@ -25,7 +25,8 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (_settingsRepository.Get().DebugMode)
             {
-                _logger.Write(LogLevel.Debug, $"[FocusedWindowChange] {e.OldFocusedWindowTitle} -> {e.NewFocusedWindowTitle}");
+                _logger.Write(LogLevel.Debug, $"[FocusedWindowChange][Old] {e.OldFocusedWindow.Title} [{e.OldFocusedWindow.ProcessId}] [{e.OldFocusedWindow.ThreadId}]");
+                _logger.Write(LogLevel.Debug, $"[FocusedWindowChange][New] {e.NewFocusedWindow.Title} [{e.NewFocusedWindow.ProcessId}] [{e.NewFocusedWindow.ThreadId}]");
             }
         }
     }
