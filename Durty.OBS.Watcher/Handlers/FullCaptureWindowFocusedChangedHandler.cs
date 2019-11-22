@@ -39,7 +39,10 @@ namespace Durty.OBS.Watcher.Handlers
         private void OnFocusedWindowTitleChanged(object sender, FocusedWindowTitleChangedEventArgs e)
         {
             if (_currentFullCaptureWindowInfo != null //Full capture window focus is only lost if we ever had it in focus
-                && e.NewFocusedWindow.ProcessId != e.OldFocusedWindow.ProcessId) //If new focused window is no parent of old focused window
+                && (
+                    _currentActiveFullCaptureAction.AutoCaptureSubWindows && e.NewFocusedWindow.ProcessId != e.OldFocusedWindow.ProcessId //If new focused window is no parent of old focused window
+                || !_currentActiveFullCaptureAction.AutoCaptureSubWindows && e.NewFocusedWindow.Title != _currentFullCaptureWindowInfo.Title //If new window title is not old window title
+                )) 
             {
                 OnFullCapturedWindowFocusLost();
                 return;

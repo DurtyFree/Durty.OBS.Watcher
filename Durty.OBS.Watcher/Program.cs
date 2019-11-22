@@ -23,7 +23,6 @@ namespace Durty.OBS.Watcher
     -> Add support for multiple full capture actions
     -> Set full display capture visibility to false when tool is closed
     -> Add support for window title match lists
-    -> Add setting & support to additionaly include all child / spawned sub processes for the given window title match
     -> Auto raise focused window watcher polling?
     -> Remove display capture with transform on source by adding 42 to transform size y (Obs transform extension method)
     -> Use System.Windows.Forms.Screen to retrieve working area of given display (without task bar)

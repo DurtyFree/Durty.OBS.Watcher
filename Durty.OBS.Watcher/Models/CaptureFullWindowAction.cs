@@ -21,5 +21,11 @@
         /// Per default 2 seconds
         /// </summary>
         public int NeededWindowFocusTime { get; set; } = 2;
+
+        /// <summary>
+        /// If enabled, windows / processes spawned by the full captured main window will not end the full capture
+        /// Per default enabled
+        /// </summary>
+        public bool AutoCaptureSubWindows { get; set; } = true;
     }
 }
