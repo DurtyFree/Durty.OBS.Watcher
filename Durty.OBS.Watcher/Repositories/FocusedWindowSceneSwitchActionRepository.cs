@@ -9,8 +9,8 @@ namespace Durty.OBS.Watcher.Repositories
         {
             new FocusedWindowSceneSwitchAction()
             {
-                WindowTitle = "DurtyMapEditor - Microsoft Visual Studio",
-                SceneName = "AltV Dev",
+                WindowTitle = "Opera",
+                SceneName = "Pause Scene",
                 BackToPreviousScene = true,
                 EnabledForSceneName = ""
             }

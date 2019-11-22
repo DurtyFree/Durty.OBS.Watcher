@@ -7,12 +7,13 @@ namespace Durty.OBS.Watcher.Repositories
     {
         private readonly List<FocusedWindowSourceVisibilityAction> _focusedWindowSourceVisibilityActions = new List<FocusedWindowSourceVisibilityAction>()
         {
-            new FocusedWindowSourceVisibilityAction()
-            {
-                WindowTitle = "DurtyMapEditor - Microsoft Visual Studio",
-                SourceName = "AltV Dev",
-                HideOnFocusLust = true
-            }
+            //new FocusedWindowSourceVisibilityAction()
+            //{
+            //    WindowTitle = "Opera",
+            //    SourceName = "Opera Browser",
+            //    EnabledForSceneName = "AltV Dev Scene",
+            //    HideOnFocusLust = true
+            //}
         };
 
         public List<FocusedWindowSourceVisibilityAction> GetAll()

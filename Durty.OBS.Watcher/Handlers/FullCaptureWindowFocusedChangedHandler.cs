@@ -17,6 +17,7 @@ namespace Durty.OBS.Watcher.Handlers
         private readonly OBSWebsocket _obs;
         private readonly WindowMatchService _windowMatchService;
         private readonly ILogger _logger;
+
         private Timer _focusedCheckTimer;
         private bool _fullCaptureWindowSourceVisible;
         private WindowInfo _currentFullCaptureWindowInfo;
@@ -58,10 +59,7 @@ namespace Durty.OBS.Watcher.Handlers
                 return;
             }
 
-            List<CaptureFullWindowAction> actions = _captureFullWindowActionRepository
-                .GetAll();
-
-            foreach (CaptureFullWindowAction action in actions)
+            foreach (CaptureFullWindowAction action in _captureFullWindowActionRepository.GetAll())
             {
                 if (e.NewFocusedWindow.Title != string.Empty 
                     && _windowMatchService.DoesTitleMatch(e.NewFocusedWindow.Title, action.CaptureWindowTitle))
