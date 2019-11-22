@@ -31,20 +31,27 @@ namespace Durty.OBS.Watcher
 
     class Program
     {
-        public static readonly IKernel Kernel = new StandardKernel();
+        private static readonly IKernel Kernel = new StandardKernel();
+        private static Bootstrapper _bootstrapper;
 
         static void Main(string[] args)
         {
             Console.Title = "Durtys OBS Watcher Tool";
+            
+            _bootstrapper = new Bootstrapper(Kernel);
+            _bootstrapper.DefineRules();
+            _bootstrapper.Run();
 
-            Bootstrapper bootstrapper = new Bootstrapper(Kernel);
-            bootstrapper.DefineRules();
-            bootstrapper.Run();
-
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             ILogger logger = Kernel.Get<ILogger>();
 
             logger.Write(LogLevel.Info, "Press any key to exit.");
             Console.ReadLine();
+        }
+
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            _bootstrapper.Stop();
         }
     }
 }

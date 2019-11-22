@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Durty.OBS.Watcher.Contracts;
@@ -34,6 +35,15 @@ namespace Durty.OBS.Watcher.Handlers
             _logger = logger;
 
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
+            activeWindowWatcher.FocusedWindowTrackLost += OnFocusedWindowTrackLost;
+        }
+
+        private void OnFocusedWindowTrackLost(object sender, EventArgs e)
+        {
+            if (_fullCaptureWindowSourceVisible)
+            {
+                ToggleObsSourceRender(_currentActiveFullCaptureAction.DisplayCaptureSourceName, false);
+            }
         }
 
         private void OnFocusedWindowTitleChanged(object sender, FocusedWindowTitleChangedEventArgs e)
@@ -64,55 +74,58 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnFullCapturedWindowFocusLost()
         {
-            SceneItem obsDisplayCaptureSource = GetCurrentSceneFullDisplayCaptureSource(_currentActiveFullCaptureAction);
-            if (obsDisplayCaptureSource.InternalType == null)
-                return;
+
             _logger.Write(LogLevel.Debug, $"Full Capture Window focus lost");
 
             //If capture window focus lost, kill timer
             _focusedCheckTimer.Dispose();
             _focusedCheckTimer = null;
 
-            _currentActiveFullCaptureAction = null;
-            _currentFullCaptureWindowInfo = null;
-            
             //Reset visibility of full capture source
             if (_fullCaptureWindowSourceVisible)
             {
-                _obs.SetSourceRender(obsDisplayCaptureSource.SourceName, false);
-                _fullCaptureWindowSourceVisible = false;
+                ToggleObsSourceRender(_currentActiveFullCaptureAction.DisplayCaptureSourceName, false);
             }
+
+            _currentActiveFullCaptureAction = null;
+            _currentFullCaptureWindowInfo = null;
+        }
+
+        private bool ToggleObsSourceRender(string captureSourceName, bool visible)
+        {
+            SceneItem obsDisplayCaptureSource = GetCurrentSceneFullDisplayCaptureSource(captureSourceName);
+            if (obsDisplayCaptureSource.InternalType == null)
+                return false;
+
+            _obs.SetSourceRender(obsDisplayCaptureSource.SourceName, visible);
+            _fullCaptureWindowSourceVisible = visible;
+            return true;
         }
 
         private void OnFullCaptureWindowFocused(CaptureFullWindowAction action, WindowInfo newFocusedWindowInfo)
         {
-            SceneItem obsDisplayCaptureSource = GetCurrentSceneFullDisplayCaptureSource(action);
-            if (obsDisplayCaptureSource.InternalType == null)
-                return;
             _logger.Write(LogLevel.Debug, $"Full Capture Window focused, waiting {action.NeededWindowFocusTime} seconds...");
 
             _currentActiveFullCaptureAction = action;
             _currentFullCaptureWindowInfo = newFocusedWindowInfo;
 
             //Check if focus is still focused in configured time
-            _focusedCheckTimer = new Timer(OnFullCaptureWindowReallyFocused, obsDisplayCaptureSource, action.NeededWindowFocusTime * 1000, Timeout.Infinite);
+            _focusedCheckTimer = new Timer(OnFullCaptureWindowReallyFocused, null, action.NeededWindowFocusTime * 1000, Timeout.Infinite);
         }
 
         private void OnFullCaptureWindowReallyFocused(object state)
         {
             _logger.Write(LogLevel.Debug, "Full Capture Window really focused, full capture is now visible");
 
-            SceneItem sceneItem = (SceneItem) state;
             if (!_fullCaptureWindowSourceVisible)
             {
-                _obs.SetSourceRender(sceneItem.SourceName, true);
-                _fullCaptureWindowSourceVisible = true;
+                ToggleObsSourceRender(_currentActiveFullCaptureAction.DisplayCaptureSourceName, true);
             }
         }
 
-        private SceneItem GetCurrentSceneFullDisplayCaptureSource(CaptureFullWindowAction action)
+        private SceneItem GetCurrentSceneFullDisplayCaptureSource(string captureSourceName)
         {
-            SceneItem obsDisplayCaptureSource = _obs.GetCurrentScene().Items.FirstOrDefault(i => i.SourceName == action.DisplayCaptureSourceName);
+            SceneItem obsDisplayCaptureSource = _obs.GetCurrentScene().Items.FirstOrDefault(i => i.SourceName == captureSourceName);
             if (obsDisplayCaptureSource.InternalType == null || obsDisplayCaptureSource.InternalType != "monitor_capture")
                 return default;
 

@@ -31,6 +31,7 @@ namespace Durty.OBS.Watcher
         public WindowInfo FocusedWindowInfo { get; private set; }
 
         public event EventHandler<FocusedWindowTitleChangedEventArgs> FocusedWindowTitleChanged;
+        public event EventHandler FocusedWindowTrackLost;
 
         public ActiveWindowWatcher(int pollDelayMilliseconds = 1000)
         {
@@ -78,6 +79,7 @@ namespace Durty.OBS.Watcher
         public void Stop()
         {
             _cancellationTokenSource.Cancel();
+            FocusedWindowTrackLost?.Invoke(this, EventArgs.Empty);
         }
     }
 }
