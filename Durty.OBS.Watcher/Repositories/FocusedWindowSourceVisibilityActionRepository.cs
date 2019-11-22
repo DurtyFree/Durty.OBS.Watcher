@@ -10,7 +10,7 @@ namespace Durty.OBS.Watcher.Repositories
             new FocusedWindowSourceVisibilityAction()
             {
                 WindowTitle = "DurtyMapEditor - Microsoft Visual Studio",
-                SceneName = "AltV Dev",
+                SourceName = "AltV Dev",
                 HideOnFocusLust = true
             }
         };

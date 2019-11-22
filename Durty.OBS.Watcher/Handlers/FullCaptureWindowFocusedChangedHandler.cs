@@ -74,7 +74,6 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnFullCapturedWindowFocusLost()
         {
-
             _logger.Write(LogLevel.Debug, $"Full Capture Window focus lost");
 
             //If capture window focus lost, kill timer
