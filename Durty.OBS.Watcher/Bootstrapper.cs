@@ -24,15 +24,18 @@ namespace Durty.OBS.Watcher
         {
             _kernel.Bind<ObsManager>().ToMethod(context =>
             {
-                var settingsRepository = context.Kernel.Get<SettingsRepository>();
-                var logger = context.Kernel.Get<ILogger>();
-                var settings = settingsRepository.Get();
+                Settings settings = context.Kernel.Get<SettingsRepository>().Get();
+                ILogger logger = context.Kernel.Get<ILogger>();
                 return new ObsManager(logger, settings.ObsWebSocketsIp, settings.ObsWebSocketsPort, settings.ObsWebSocketsAuthPassword);
             }).InSingletonScope();
             _kernel.Bind<FocusedWindowSourceVisibilityActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<CaptureFullWindowActionRepository>().ToSelf().InSingletonScope();
             _kernel.Bind<SettingsRepository>().ToSelf().InSingletonScope();
-            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context => new ActiveWindowWatcher(10)).InSingletonScope();
+            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context =>
+            {
+                Settings settings = context.Kernel.Get<SettingsRepository>().Get();
+                return new ActiveWindowWatcher(settings.WindowWatcherPollingDelay);
+            }).InSingletonScope();
             _kernel.Bind<ILogger>().To<ConsoleLogger>().InSingletonScope();
             _kernel.Bind<OBSWebsocket>().ToMethod(context =>
             {

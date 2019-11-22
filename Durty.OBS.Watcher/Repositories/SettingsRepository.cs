@@ -11,7 +11,8 @@ namespace Durty.OBS.Watcher.Repositories
                 ObsWebSocketsIp = "127.0.0.1",
                 ObsWebSocketsPort = 4444,
                 ObsWebSocketsAuthPassword = "",
-                DebugMode = true
+                DebugMode = true,
+                WindowWatcherPollingDelay = 10
             };
         }
     }
