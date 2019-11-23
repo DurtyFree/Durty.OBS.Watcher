@@ -19,7 +19,7 @@ namespace Durty.OBS.Watcher.Repositories
                 {
                     "Pause Scene"
                 },
-                HideOnFocusLust = true
+                HideOnFocusLost = true
             }
         };
 

@@ -15,6 +15,7 @@ namespace Durty.OBS.Watcher.Handlers
         private readonly WindowMatchService _windowMatchService;
         private readonly ILogger _logger;
 
+        private string _actionSourceInScene;
         private bool _actionSourceVisible;
         private WindowInfo _currentFocusedWindowInfo;
         private FocusedWindowSourceVisibilityAction _currentFocusAction;
@@ -37,7 +38,10 @@ namespace Durty.OBS.Watcher.Handlers
         private void OnFocusedWindowTitleChanged(object sender, FocusedWindowTitleChangedEventArgs e)
         {
             if (_currentFocusedWindowInfo != null //Full capture window focus is only lost if we ever had it in focus
-                && e.NewFocusedWindow.Title != _currentFocusedWindowInfo.Title) //If new window title is not old window title
+                && (
+                    _currentFocusAction.IncludeSubWindows && e.NewFocusedWindow.ProcessId != e.OldFocusedWindow.ProcessId //If new focused window is no parent of old focused window
+                    || !_currentFocusAction.IncludeSubWindows && e.NewFocusedWindow.Title != _currentFocusedWindowInfo.Title //If new window title is not old window title
+                ))
             {
                 OnActionWindowFocusLost(e.NewFocusedWindow);
             }
@@ -52,10 +56,10 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnActionWindowFocusLost(WindowInfo newFocusedWindow)
         {
-            if (_actionSourceVisible && _currentFocusAction.HideOnFocusLust)
+            if (_actionSourceVisible && _currentFocusAction.HideOnFocusLost)
             {
                 _logger.Write(LogLevel.Info, $"Source Visibility Window focus lost, switching '{_currentFocusAction.SourceName}' visibility to invisible");
-                _obs.SetSourceRender(_currentFocusAction.SourceName, false);
+                _obs.SetSourceRender(_currentFocusAction.SourceName, false, _actionSourceInScene);
                 _actionSourceVisible = false;
             }
             else
@@ -65,6 +69,7 @@ namespace Durty.OBS.Watcher.Handlers
 
             _currentFocusAction = null;
             _currentFocusedWindowInfo = null;
+            _actionSourceInScene = null;
         }
 
         private void OnActionWindowFocused(FocusedWindowSourceVisibilityAction action, WindowInfo newFocusedWindow)
@@ -78,6 +83,7 @@ namespace Durty.OBS.Watcher.Handlers
 
             _currentFocusAction = action;
             _currentFocusedWindowInfo = newFocusedWindow;
+            _actionSourceInScene = currentSceneName;
 
             if (!_actionSourceVisible)
             {

@@ -31,5 +31,11 @@ namespace Durty.OBS.Watcher.Models
         /// When enabled, scene is switched back to previously selected scene on given window focus lost
         /// </summary>
         public bool BackToPreviousScene { get; set; }
+        
+        /// <summary>
+        /// If enabled, windows / processes spawned by the main window will will not trigger focus lost
+        /// Per default disabled
+        /// </summary>
+        public bool IncludeSubWindows { get; set; } = false;
     }
 }

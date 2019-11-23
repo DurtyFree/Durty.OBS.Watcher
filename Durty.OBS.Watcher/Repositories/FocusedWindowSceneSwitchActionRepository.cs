@@ -16,7 +16,8 @@ namespace Durty.OBS.Watcher.Repositories
                 {
                     "Pause Scene"
                 },
-                DisabledForScenes = new List<string>()
+                DisabledForScenes = new List<string>(),
+                IncludeSubWindows = true
             }
         };
 

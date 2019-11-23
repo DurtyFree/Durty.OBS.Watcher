@@ -18,6 +18,7 @@ namespace Durty.OBS.Watcher
     - Change Scene Source Render/Visibility on focused window changed
     -> Support changing source render toggle for all available scenes, not only current one by setting explicit scene name
     -> Support multiple actions 
+    -> Fix "race condition" whenever action is only enabled for certain scene, that is switched to inbefore cuz of switch action
 
     - Capture Window with tooltips mode
     -> Add support for multiple full capture actions
