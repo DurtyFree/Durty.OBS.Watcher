@@ -59,6 +59,10 @@ namespace Durty.OBS.Watcher.Handlers
                 return;
             }
 
+            //Abort "on focused" when we already are full capturing and the new focused window is our current full capture window
+            if (_currentFullCaptureWindowInfo != null && _currentFullCaptureWindowInfo.Title == e.NewFocusedWindow.Title)
+                return;
+
             foreach (CaptureFullWindowAction action in _captureFullWindowActionRepository.GetAll())
             {
                 if (e.NewFocusedWindow.Title != string.Empty 
