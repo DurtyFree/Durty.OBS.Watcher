@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Handlers;
 using Durty.OBS.Watcher.Loggers;
@@ -28,22 +29,27 @@ namespace Durty.OBS.Watcher
                 ILogger logger = context.Kernel.Get<ILogger>();
                 return new ObsManager(logger, settings.ObsWebSocketsIp, settings.ObsWebSocketsPort, settings.ObsWebSocketsAuthPassword);
             }).InSingletonScope();
-            _kernel.Bind<FocusedWindowSourceVisibilityActionRepository>().ToSelf().InSingletonScope();
-            _kernel.Bind<CaptureFullWindowActionRepository>().ToSelf().InSingletonScope();
-            _kernel.Bind<SettingsRepository>().ToSelf().InSingletonScope();
-            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context =>
-            {
-                Settings settings = context.Kernel.Get<SettingsRepository>().Get();
-                return new ActiveWindowWatcher(settings.WindowWatcherPollingDelay);
-            }).InSingletonScope();
+            _kernel.Bind<ActiveWindowWatcher>().ToMethod(context => new ActiveWindowWatcher(context.Kernel.Get<SettingsRepository>().Get().WindowWatcherPollingDelay)).InSingletonScope();
             _kernel.Bind<ILogger>().To<ConsoleLogger>().InSingletonScope();
-            _kernel.Bind<ObsWebSocketApi>().ToMethod(context =>
-            {
-                ObsManager obsManager = _kernel.Get<ObsManager>();
-                return obsManager.Obs.Api;
-            });
+            _kernel.Bind<ObsWebSocketApi>().ToMethod(context => _kernel.Get<ObsManager>().Obs.Api);
             _kernel.Bind<WindowMatchService>().ToSelf();
 
+            #region Repositories
+
+            //TODO: Outsource this
+            string configBaseFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "configs");
+            if (!Directory.Exists(configBaseFolderPath))
+            {
+                Directory.CreateDirectory(configBaseFolderPath);
+            }
+
+            _kernel.Bind<FocusedWindowSceneSwitchActionRepository>().ToMethod(context => new FocusedWindowSceneSwitchActionRepository(configBaseFolderPath, context.Kernel.Get<ILogger>())).InSingletonScope();
+            _kernel.Bind<FocusedWindowSourceVisibilityActionRepository>().ToMethod(context => new FocusedWindowSourceVisibilityActionRepository(configBaseFolderPath, context.Kernel.Get<ILogger>())).InSingletonScope();
+            _kernel.Bind<CaptureFullWindowActionRepository>().ToMethod(context => new CaptureFullWindowActionRepository(configBaseFolderPath, context.Kernel.Get<ILogger>())).InSingletonScope();
+            _kernel.Bind<SettingsRepository>().ToMethod(context => new SettingsRepository(configBaseFolderPath, context.Kernel.Get<ILogger>())).InSingletonScope();
+
+            #endregion
+            
             #region Handlers
 
             _kernel.Bind<IHandler>().To<FocusedWindowSourceVisibilityHandler>().InSingletonScope();

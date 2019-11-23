@@ -6,8 +6,6 @@ namespace Durty.OBS.Watcher
 {
     /* TODO / IDEAS
     - On startup check all defined actions if scene & source names are valid
-    - TODO All actions should be defined in json files
-    - TODO Application configuration should be outsourced to configuration json
 
     - Focused Window Change title should support placeholders 'DurtyMapEditor%Visual Studio' to check for multiple contain or exact window title match
     - Better Title Match check in order to prevent false "full capture activations" -> glitches (Website names)
