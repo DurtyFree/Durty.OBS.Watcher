@@ -13,6 +13,7 @@ namespace Durty.OBS.Watcher.Handlers
         private readonly FocusedWindowSceneSwitchActionRepository _focusedWindowSceneSwitchActionRepository;
         private readonly WindowMatchService _windowMatchService;
         private readonly OBSWebsocket _obs;
+        private readonly ILogger _logger;
 
         private bool _sceneSwitched;
         private WindowInfo _currentFocusedWindowInfo;
@@ -23,11 +24,13 @@ namespace Durty.OBS.Watcher.Handlers
             FocusedWindowSceneSwitchActionRepository focusedWindowSceneSwitchActionRepository,
             ActiveWindowWatcher activeWindowWatcher,
             WindowMatchService windowMatchService,
-            OBSWebsocket obs)
+            OBSWebsocket obs,
+            ILogger logger)
         {
             _focusedWindowSceneSwitchActionRepository = focusedWindowSceneSwitchActionRepository;
             _windowMatchService = windowMatchService;
             _obs = obs;
+            _logger = logger;
 
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
         }
@@ -52,9 +55,14 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (_sceneSwitched && _currentFocusAction.BackToPreviousScene)
             {
+                _logger.Write(LogLevel.Info, $"Scene Switch Window focus lost, switching '{_currentFocusAction.SceneName}' to previous scene '{_previousSceneName}'");
                 _obs.SetCurrentScene(_previousSceneName);
                 _previousSceneName = null;
                 _sceneSwitched = false;
+            }
+            else
+            {
+                _logger.Write(LogLevel.Info, $"Scene Switch Window focus lost");
             }
 
             _currentFocusAction = null;
@@ -65,6 +73,7 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (action.EnabledForSceneName != string.Empty && action.EnabledForSceneName != _obs.GetCurrentScene().Name)
                 return;
+            _logger.Write(LogLevel.Info, $"Scene Switch Window focused, switching '{_currentFocusAction.SceneName}' to previous scene '{_previousSceneName}'");
 
             _currentFocusAction = action;
             _currentFocusedWindowInfo = newFocusedWindow;

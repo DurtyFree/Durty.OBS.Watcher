@@ -70,9 +70,30 @@ namespace Durty.OBS.Watcher.Handlers
             }
         }
 
+        private void OnFullCaptureWindowFocused(CaptureFullWindowAction action, WindowInfo newFocusedWindowInfo)
+        {
+            _logger.Write(LogLevel.Debug, $"Full Capture Window focused, waiting {action.NeededWindowFocusTime} seconds...");
+
+            _currentActiveFullCaptureAction = action;
+            _currentFullCaptureWindowInfo = newFocusedWindowInfo;
+
+            //Check if focus is still focused in configured time
+            _focusedCheckTimer = new Timer(OnFullCaptureWindowReallyFocused, null, action.NeededWindowFocusTime * 1000, Timeout.Infinite);
+        }
+
+        private void OnFullCaptureWindowReallyFocused(object state)
+        {
+            _logger.Write(LogLevel.Info, $"Full Capture Window really focused, full capture '{_currentActiveFullCaptureAction.DisplayCaptureSourceName}' is now visible");
+
+            if (!_fullCaptureWindowSourceVisible)
+            {
+                ToggleObsSourceRender(_currentActiveFullCaptureAction.DisplayCaptureSourceName, true);
+            }
+        }
+
         private void OnFullCapturedWindowFocusLost()
         {
-            _logger.Write(LogLevel.Debug, $"Full Capture Window focus lost");
+            _logger.Write(LogLevel.Info, $"Full Capture Window focus lost, disabling '{_currentActiveFullCaptureAction.DisplayCaptureSourceName}'");
 
             //If capture window focus lost, kill timer
             _focusedCheckTimer.Dispose();
@@ -97,27 +118,6 @@ namespace Durty.OBS.Watcher.Handlers
             _obs.SetSourceRender(obsDisplayCaptureSource.SourceName, visible);
             _fullCaptureWindowSourceVisible = visible;
             return true;
-        }
-
-        private void OnFullCaptureWindowFocused(CaptureFullWindowAction action, WindowInfo newFocusedWindowInfo)
-        {
-            _logger.Write(LogLevel.Debug, $"Full Capture Window focused, waiting {action.NeededWindowFocusTime} seconds...");
-
-            _currentActiveFullCaptureAction = action;
-            _currentFullCaptureWindowInfo = newFocusedWindowInfo;
-
-            //Check if focus is still focused in configured time
-            _focusedCheckTimer = new Timer(OnFullCaptureWindowReallyFocused, null, action.NeededWindowFocusTime * 1000, Timeout.Infinite);
-        }
-
-        private void OnFullCaptureWindowReallyFocused(object state)
-        {
-            _logger.Write(LogLevel.Debug, "Full Capture Window really focused, full capture is now visible");
-
-            if (!_fullCaptureWindowSourceVisible)
-            {
-                ToggleObsSourceRender(_currentActiveFullCaptureAction.DisplayCaptureSourceName, true);
-            }
         }
 
         private SceneItem GetCurrentSceneFullDisplayCaptureSource(string captureSourceName)

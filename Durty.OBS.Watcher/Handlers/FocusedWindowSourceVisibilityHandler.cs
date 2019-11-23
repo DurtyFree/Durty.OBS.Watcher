@@ -14,6 +14,7 @@ namespace Durty.OBS.Watcher.Handlers
         private readonly FocusedWindowSourceVisibilityActionRepository _sourceVisibilityActionRepository;
         private readonly OBSWebsocket _obs;
         private readonly WindowMatchService _windowMatchService;
+        private readonly ILogger _logger;
 
         private bool _actionSourceVisible;
         private WindowInfo _currentFocusedWindowInfo;
@@ -23,12 +24,14 @@ namespace Durty.OBS.Watcher.Handlers
             ActiveWindowWatcher activeWindowWatcher, 
             FocusedWindowSourceVisibilityActionRepository sourceVisibilityActionRepository,
             OBSWebsocket obs,
-            WindowMatchService windowMatchService)
+            WindowMatchService windowMatchService,
+            ILogger logger)
         {
             _sourceVisibilityActionRepository = sourceVisibilityActionRepository;
             _obs = obs;
             _windowMatchService = windowMatchService;
-
+            _logger = logger;
+            
             activeWindowWatcher.FocusedWindowTitleChanged += OnFocusedWindowTitleChanged;
         }
 
@@ -52,8 +55,13 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (_actionSourceVisible && _currentFocusAction.HideOnFocusLust)
             {
+                _logger.Write(LogLevel.Info, $"Source Visibility Window focus lost, switching '{_currentFocusAction.SourceName}' visibility to invisible");
                 _obs.SetSourceRender(_currentFocusAction.SourceName, false);
                 _actionSourceVisible = false;
+            }
+            else
+            {
+                _logger.Write(LogLevel.Info, $"Source Visibility Window focus lost");
             }
 
             _currentFocusAction = null;
@@ -64,6 +72,7 @@ namespace Durty.OBS.Watcher.Handlers
         {
             if (action.EnabledForSceneName != string.Empty && action.EnabledForSceneName != _obs.GetCurrentScene().Name)
                 return;
+            _logger.Write(LogLevel.Info, $"Source Visibility Window focused, switching '{_currentFocusAction.SourceName}' visibility to visible");
 
             _currentFocusAction = action;
             _currentFocusedWindowInfo = newFocusedWindow;
