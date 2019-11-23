@@ -1,4 +1,6 @@
-﻿namespace Durty.OBS.Watcher.Models
+﻿using System.Collections.Generic;
+
+namespace Durty.OBS.Watcher.Models
 {
     public class FocusedWindowSceneSwitchAction
     {
@@ -14,10 +16,16 @@
         public string SceneName { get; set; }
 
         /// <summary>
-        /// Defines which scene must be selected for this action to be enabled
+        /// Defines which scene(s) must be selected for this action to be enabled
         /// Optional
         /// </summary>
-        public string EnabledForSceneName { get; set; }
+        public List<string> EnabledForScenes { get; set; }
+
+        /// <summary>
+        /// Defines which scene(s) must not be selected for this action to be enabled
+        /// Optional
+        /// </summary>
+        public List<string> DisabledForScenes { get; set; }
 
         /// <summary>
         /// When enabled, scene is switched back to previously selected scene on given window focus lost

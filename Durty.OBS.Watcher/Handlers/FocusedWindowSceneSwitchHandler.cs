@@ -71,16 +71,19 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnActionWindowFocused(FocusedWindowSceneSwitchAction action, WindowInfo newFocusedWindow)
         {
-            if (action.EnabledForSceneName != string.Empty && action.EnabledForSceneName != _obs.GetCurrentScene().Name)
+            string currentSceneName = _obs.GetCurrentScene().Name;
+            if (action.EnabledForScenes.Count != 0 && !action.EnabledForScenes.Any(s => s == currentSceneName))
                 return;
-            _logger.Write(LogLevel.Info, $"Scene Switch Window focused, switching '{_currentFocusAction.SceneName}' to previous scene '{_previousSceneName}'");
+            if (action.DisabledForScenes.Count != 0 && action.DisabledForScenes.Any(s => s == currentSceneName))
+                return;
+            _logger.Write(LogLevel.Info, $"Scene Switch Window focused, switching '{action.SceneName}' to previous scene '{currentSceneName}'");
 
             _currentFocusAction = action;
             _currentFocusedWindowInfo = newFocusedWindow;
 
             if (!_sceneSwitched)
             {
-                _previousSceneName = _obs.GetCurrentScene().Name;
+                _previousSceneName = currentSceneName;
                 _obs.SetCurrentScene(_currentFocusAction.SceneName);
                 _sceneSwitched = true;
             }

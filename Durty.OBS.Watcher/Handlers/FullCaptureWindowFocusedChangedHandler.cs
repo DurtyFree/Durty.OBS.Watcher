@@ -116,7 +116,7 @@ namespace Durty.OBS.Watcher.Handlers
         private bool ToggleObsSourceRender(string captureSourceName, bool visible)
         {
             SceneItem obsDisplayCaptureSource = GetCurrentSceneFullDisplayCaptureSource(captureSourceName);
-            if (obsDisplayCaptureSource.InternalType == null)
+            if (obsDisplayCaptureSource?.InternalType == null)
                 return false;
 
             _obs.SetSourceRender(obsDisplayCaptureSource.SourceName, visible);

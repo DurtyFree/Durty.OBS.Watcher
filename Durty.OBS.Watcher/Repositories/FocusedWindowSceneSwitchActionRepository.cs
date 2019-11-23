@@ -10,9 +10,13 @@ namespace Durty.OBS.Watcher.Repositories
             new FocusedWindowSceneSwitchAction()
             {
                 WindowTitle = "Opera",
-                SceneName = "Pause Scene",
+                SceneName = "AltV Dev Scene",
                 BackToPreviousScene = true,
-                EnabledForSceneName = ""
+                EnabledForScenes = new List<string>()             
+                {
+                    "Pause Scene"
+                },
+                DisabledForScenes = new List<string>()
             }
         };
 

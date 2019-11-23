@@ -6,10 +6,11 @@ namespace Durty.OBS.Watcher
 {
     /* TODO / IDEAS
     - On startup check all defined actions if scene & source names are valid
-    - All actions should be defined in json files
-    - Application configuration should be outsourced to configuration json
+    - TODO All actions should be defined in json files
+    - TODO Application configuration should be outsourced to configuration json
 
     - Focused Window Change title should support placeholders 'DurtyMapEditor%Visual Studio' to check for multiple contain or exact window title match
+    - Better Title Match check in order to prevent false "full capture activations" -> glitches (Website names)
 
     - Change Scene Action on focused window changed
     -> Optional only enabled when in specific scene currently
@@ -23,7 +24,6 @@ namespace Durty.OBS.Watcher
     -> Add support for window title match lists
     -> Remove display capture with transform on source by adding 42 to transform size y (Obs transform extension method)
     -> Use System.Windows.Forms.Screen to retrieve working area of given display (without task bar)
-    -> TODO: Better Title Match check in order to prevent false "full capture activations" -> glitches (Website names)
      */
 
     class Program

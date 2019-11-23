@@ -69,9 +69,12 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnActionWindowFocused(FocusedWindowSourceVisibilityAction action, WindowInfo newFocusedWindow)
         {
-            if (action.EnabledForSceneName != string.Empty && action.EnabledForSceneName != _obs.GetCurrentScene().Name)
+            string currentSceneName = _obs.GetCurrentScene().Name;
+            if (action.EnabledForScenes.Count != 0 && !action.EnabledForScenes.Any(s => s == currentSceneName))
                 return;
-            _logger.Write(LogLevel.Info, $"Source Visibility Window focused, switching '{_currentFocusAction.SourceName}' visibility to visible");
+            if (action.DisabledForScenes.Count != 0 && action.DisabledForScenes.Any(s => s == currentSceneName))
+                return;
+            _logger.Write(LogLevel.Info, $"Source Visibility Window focused, switching '{action.SourceName}' visibility to visible");
 
             _currentFocusAction = action;
             _currentFocusedWindowInfo = newFocusedWindow;
