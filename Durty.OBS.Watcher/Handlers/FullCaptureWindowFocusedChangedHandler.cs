@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
 using Durty.OBS.Watcher.Services;
-using OBSWebsocketDotNet;
+using OBS.WebSocket.NET;
+using OBS.WebSocket.NET.Types;
 
 namespace Durty.OBS.Watcher.Handlers
 {
@@ -14,7 +14,7 @@ namespace Durty.OBS.Watcher.Handlers
         : IHandler
     {
         private readonly CaptureFullWindowActionRepository _captureFullWindowActionRepository;
-        private readonly OBSWebsocket _obs;
+        private readonly ObsWebSocketApi _obs;
         private readonly WindowMatchService _windowMatchService;
         private readonly ILogger _logger;
 
@@ -26,7 +26,7 @@ namespace Durty.OBS.Watcher.Handlers
         public FullCaptureWindowFocusedChangedHandler(
             ActiveWindowWatcher activeWindowWatcher,
             CaptureFullWindowActionRepository captureFullWindowActionRepository,
-            OBSWebsocket obs,
+            ObsWebSocketApi obs,
             WindowMatchService windowMatchService,
             ILogger logger)
         {
@@ -123,8 +123,8 @@ namespace Durty.OBS.Watcher.Handlers
         private SceneItem GetCurrentSceneFullDisplayCaptureSource(string captureSourceName)
         {
             SceneItem obsDisplayCaptureSource = _obs.GetCurrentScene().Items.FirstOrDefault(i => i.SourceName == captureSourceName);
-            if (obsDisplayCaptureSource.InternalType == null || obsDisplayCaptureSource.InternalType != "monitor_capture")
-                return default;
+            if (obsDisplayCaptureSource?.InternalType == null || obsDisplayCaptureSource.InternalType != "monitor_capture")
+                return null;
 
             return obsDisplayCaptureSource;
         }

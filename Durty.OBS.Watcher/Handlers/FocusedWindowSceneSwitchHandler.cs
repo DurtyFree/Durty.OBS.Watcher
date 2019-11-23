@@ -3,7 +3,7 @@ using Durty.OBS.Watcher.Contracts;
 using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
 using Durty.OBS.Watcher.Services;
-using OBSWebsocketDotNet;
+using OBS.WebSocket.NET;
 
 namespace Durty.OBS.Watcher.Handlers
 {
@@ -12,7 +12,7 @@ namespace Durty.OBS.Watcher.Handlers
     {
         private readonly FocusedWindowSceneSwitchActionRepository _focusedWindowSceneSwitchActionRepository;
         private readonly WindowMatchService _windowMatchService;
-        private readonly OBSWebsocket _obs;
+        private readonly ObsWebSocketApi _obs;
         private readonly ILogger _logger;
 
         private bool _sceneSwitched;
@@ -24,7 +24,7 @@ namespace Durty.OBS.Watcher.Handlers
             FocusedWindowSceneSwitchActionRepository focusedWindowSceneSwitchActionRepository,
             ActiveWindowWatcher activeWindowWatcher,
             WindowMatchService windowMatchService,
-            OBSWebsocket obs,
+            ObsWebSocketApi obs,
             ILogger logger)
         {
             _focusedWindowSceneSwitchActionRepository = focusedWindowSceneSwitchActionRepository;

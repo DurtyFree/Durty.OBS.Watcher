@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Durty.OBS.Watcher.Contracts;
-using OBSWebsocketDotNet;
+using OBS.WebSocket.NET;
 
 namespace Durty.OBS.Watcher
 {
@@ -13,7 +13,7 @@ namespace Durty.OBS.Watcher
         private readonly ILogger _logger;
         private bool _connectionEstablished;
 
-        public OBSWebsocket Obs { get; }
+        public ObsWebSocket Obs { get; }
         public bool AutoReconnect { get; set; } = true;
         public bool IsConnected => Obs.IsConnected;
 
@@ -28,9 +28,9 @@ namespace Durty.OBS.Watcher
             _password = password;
             _logger = logger;
 
-            Obs = new OBSWebsocket()
+            Obs = new ObsWebSocket()
             {
-                WSTimeout = TimeSpan.FromMinutes(1)
+                Timeout = TimeSpan.FromMinutes(1)
             };
             Obs.Disconnected += OnDisconnected;
             Obs.OBSExit += OnObsExit;
@@ -51,8 +51,8 @@ namespace Durty.OBS.Watcher
         public bool Connect()
         {
             Obs.Connect($"ws://{_serverIp}:{_port}", _password);
-            _connectionEstablished = Obs.IsConnected;
-            return Obs.IsConnected;
+            _connectionEstablished = true; //TODO: Temporary fix until Obs.Connect immediately returns connected state
+            return _connectionEstablished;
         }
 
         public void Disconnect()

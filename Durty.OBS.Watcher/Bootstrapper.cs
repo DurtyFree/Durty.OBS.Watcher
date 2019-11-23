@@ -7,7 +7,7 @@ using Durty.OBS.Watcher.Models;
 using Durty.OBS.Watcher.Repositories;
 using Durty.OBS.Watcher.Services;
 using Ninject;
-using OBSWebsocketDotNet;
+using OBS.WebSocket.NET;
 
 namespace Durty.OBS.Watcher
 {
@@ -37,10 +37,10 @@ namespace Durty.OBS.Watcher
                 return new ActiveWindowWatcher(settings.WindowWatcherPollingDelay);
             }).InSingletonScope();
             _kernel.Bind<ILogger>().To<ConsoleLogger>().InSingletonScope();
-            _kernel.Bind<OBSWebsocket>().ToMethod(context =>
+            _kernel.Bind<ObsWebSocketApi>().ToMethod(context =>
             {
                 ObsManager obsManager = _kernel.Get<ObsManager>();
-                return obsManager.Obs;
+                return obsManager.Obs.Api;
             });
             _kernel.Bind<WindowMatchService>().ToSelf();
 
