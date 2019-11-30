@@ -87,6 +87,9 @@ namespace Durty.OBS.Watcher.Handlers
 
         private void OnFullCaptureWindowReallyFocused(object state)
         {
+            if (_currentActiveFullCaptureAction == null)
+                return;
+
             _logger.Write(LogLevel.Info, $"Full Capture Window really focused, full capture '{_currentActiveFullCaptureAction.DisplayCaptureSourceName}' is now visible");
 
             if (!_fullCaptureWindowSourceVisible)
